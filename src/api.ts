@@ -16,12 +16,14 @@ app.get('/', async (req, res) => {
     return res.status(400).send('A string URL query parameter is required');
   }
 
+  console.log(`Received URL: ${url}`);
+
   const svgUrls: string[] = await getSheets(url)
     .then((urls) => {
       return urls;
     })
 
-  console.log(svgUrls);
+  console.log('Successfully retrieved the SVG URLs');
 
   res.setHeader('Content-Type', 'application/pdf');
 
@@ -42,6 +44,7 @@ app.get('/', async (req, res) => {
     res.status(500).send('Error sending the file');
   });
 
+  console.log('Successfully sent the file');
 })
 
 

@@ -11,7 +11,7 @@ export const getSheets = async (url: string): Promise<string[]> => {
   }
 
   // Init 
-  const browser = await puppeteer.launch({ headless: false, args: ['--start-maximized'] })
+  const browser = await puppeteer.launch({ headless: true, args: ['--start-maximized'] })
   const page = await browser.newPage();
   await page.setViewport({ width: 1960, height: 1080 });
   await page.goto(url, { waitUntil: 'domcontentloaded' });

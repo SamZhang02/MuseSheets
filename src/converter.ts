@@ -1,5 +1,5 @@
 import PDFDocument from 'pdfkit';
-import svgtopdf from 'svg-to-pdfkit';
+import svgtopdf, { SVGtoPDFOptions } from 'svg-to-pdfkit';
 import fs from 'fs';
 
 const downloadSVG = async (url: string) => {
@@ -13,7 +13,18 @@ export const createPdf = async (svgUrls: string[]) => {
 
   for (const url of svgUrls) {
     const svgContent = await downloadSVG(url);
-    svgtopdf(doc, svgContent, 0, 0);
+
+    const options: SVGtoPDFOptions = {
+      preserveAspectRatio: 'xMinYMin meet',
+      width: doc.page.width,
+      height: doc.page.height,
+    };
+
+    svgtopdf(doc,
+      svgContent,
+      20, // magic number to center the svg
+      0,
+      options);
     doc.addPage();
   }
 

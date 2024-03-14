@@ -1,4 +1,3 @@
-// Import the express module
 import express from 'express';
 import { getSheets } from './scraper.js';
 import { createPdf } from './converter.js';
@@ -10,7 +9,6 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.get('/', async (req, res) => {
-  // Access the URL from query parameters: /url?url=https://example.com
   const { url } = req.query;
   if (!url || typeof url !== 'string') {
     return res.status(400).send('A string URL query parameter is required');

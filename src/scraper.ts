@@ -4,7 +4,9 @@ const validateUrl = (url: string) => {
   return url.startsWith("https://musescore.com/");
 }
 
-// Get the sheets from a musescore URL, returns an array of SVGs
+/* 
+ * Get the sheets from a musescore URL, returns an array of SVGs 
+ */
 export const getSheets = async (url: string): Promise<string[]> => {
   if (!validateUrl(url)) {
     throw new Error("Invalid musescore URL");
@@ -65,7 +67,7 @@ export const getSheets = async (url: string): Promise<string[]> => {
           clearInterval(scrollInterval);
           resolve(svgs);
         }
-      }, 1000); // Adjust interval as needed
+      }, 1000);
     })
   })
 

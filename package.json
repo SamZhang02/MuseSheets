@@ -1,5 +1,5 @@
 {
-  "name": "musescore-downloader",
+  "name": "MuseSheets",
   "version": "1.0.0",
   "description": "",
   "main": "api.ts",

@@ -1,6 +1,6 @@
 # MuseSheets
 
-HTTP API to download MuseScore sheets without membership.
+HTTP API to download PDFs of sheets on MuseScore.
 
 ## Usage
 The entrypoint of the code is `src/api.ts`. 

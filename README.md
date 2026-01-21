@@ -15,6 +15,9 @@ Build the TypeScript sources before running either mode:
 npm run build
 ```
 
+## How it works
+The tool works by spawning a headless browser and scrolling through the entire page and scrapes the music sheet SVGs from the DOM. You can use it from a CLI or spawn a server for it. 
+
 ## CLI usage
 Expose the CLI once with `npm link` (or `npm install -g .` if you prefer a global install) and then call it with the friendly `musesheets` command:
 

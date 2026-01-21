@@ -2,11 +2,15 @@
   "name": "MuseSheets",
   "version": "1.0.0",
   "description": "",
-  "main": "api.ts",
+  "main": "dist/index.js",
   "type": "module",
+  "bin": {
+    "musesheets": "dist/index.js"
+  },
   "scripts": {
     "build": "npx tsc",
-    "start": "npm run build && nodemon ./dist/api.js"
+    "start": "npm run build && nodemon ./dist/index.js -- --server",
+    "cli": "npm run build && node ./dist/index.js"
   },
   "author": "",
   "license": "MIT",

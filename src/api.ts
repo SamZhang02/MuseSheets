@@ -1,51 +1,66 @@
-import express from 'express';
-import { getSheets } from './scraper.js';
-import { createPdf } from './converter.js';
+import express, { Express } from 'express';
+import { Server } from 'http';
 import path from 'path';
 import fs from 'fs';
+import { getSheets } from './scraper.js';
+import { createPdf } from './converter.js';
 
-const app = express();
+const PDF_FILENAME = 'sheets.pdf';
 
-const PORT = process.env.PORT || 3000;
+const buildApp = (): Express => {
+  const app = express();
 
-app.get('/', async (req, res) => {
-  const { url } = req.query;
-  if (!url || typeof url !== 'string') {
-    return res.status(400).send('A string URL query parameter is required');
-  }
+  app.get('/', async (req, res) => {
+    const { url } = req.query;
+    if (!url || typeof url !== 'string') {
+      res.status(400).send('A string URL query parameter is required');
+      return;
+    }
 
-  console.log(`Received URL: ${url}`);
+    console.log(`Received URL: ${url}`);
 
-  const svgUrls: string[] = await getSheets(url)
-    .then((urls) => {
-      return urls;
-    })
+    try {
+      const svgUrls = await getSheets(url);
+      console.log('Successfully retrieved the SVG URLs');
 
-  console.log('Successfully retrieved the SVG URLs');
+      const outputPath = path.join(process.cwd(), PDF_FILENAME);
+      await createPdf(svgUrls, outputPath);
+      res.setHeader('Content-Type', 'application/pdf');
 
-  res.setHeader('Content-Type', 'application/pdf');
+      const stream = fs.createReadStream(outputPath);
+      stream.on('error', (err) => {
+        console.error('Error streaming the file:', err);
+        if (!res.headersSent) {
+          res.status(500).send('Error sending the file');
+        } else {
+          res.end();
+        }
+      });
 
-  try {
-    await createPdf(svgUrls);
-  } catch (error) {
-    console.error('Error:', error);
-    res.status(500).send('Error creating pdf');
-  }
+      stream.on('close', () => {
+        void fs.promises.unlink(outputPath).catch(() => {});
+      });
 
-  const filePath = path.join(process.cwd(), 'sheets.pdf');
-  const stream = fs.createReadStream(filePath);
-
-  res.setHeader('Content-Type', 'application/pdf');
-
-  stream.pipe(res).on('error', (err) => {
-    console.error('Error streaming the file:', err);
-    res.status(500).send('Error sending the file');
+      stream.pipe(res);
+      console.log('Successfully sent the file');
+    } catch (error) {
+      console.error('Error processing request:', error);
+      res.status(500).send('Failed to generate the PDF');
+    }
   });
 
-  console.log('Successfully sent the file');
-})
+  return app;
+};
 
+export const startServer = (port = Number(process.env.PORT) || 3000): Promise<Server> => {
+  const app = buildApp();
+  return new Promise((resolve) => {
+    const server = app.listen(port, () => {
+      console.log(`Server running on port ${port}`);
+      resolve(server);
+    });
+  });
+};
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-})
+export type { Express };
+export { buildApp };
